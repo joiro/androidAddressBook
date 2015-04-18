@@ -3,11 +3,8 @@ package com.jonasschindler.addressbook;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
@@ -16,15 +13,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 
 
 public class EditContactActivity extends Activity {
@@ -51,12 +41,13 @@ public class EditContactActivity extends Activity {
         editPhone = (EditText) findViewById(R.id.editPhone);
         editMail = (EditText) findViewById(R.id.editMail);
 
-        dbHelper = new DBAdapter(this);
+        //dbHelper = new DBAdapter(this);
 
         // Receive the id information for the contact to edit from the ViewContact Activity
         Bundle bundle = getIntent().getExtras();
-        contactId = bundle.getInt("contactId");
+        //contactId = bundle.getInt("contactId");
 
+/*
         // Get all information from the contact and fill in the editText fields
         ArrayList contactDetails = dbHelper.getContactDetails(contactId);
         String contactFirstName = (String) contactDetails.get(0);
@@ -72,7 +63,7 @@ public class EditContactActivity extends Activity {
         editMail.setText(contactEmail);
         editImage.setImageBitmap(theImage);
     }
-
+*/
     // Confirm edit of contactDetails
     public void editContact(View view) {
 
@@ -88,7 +79,7 @@ public class EditContactActivity extends Activity {
         mail = editMail.getText().toString();
 
         // Call the updateContact Method in the DBHelper class
-        dbHelper.updateContact(contactId, firstName, lastName, phone, mail, photo);
+        //dbHelper.updateContact(contactId, firstName, lastName, phone, mail, photo);
 
         // Return to the ViewContact Activity
         Bundle bundle = new Bundle();

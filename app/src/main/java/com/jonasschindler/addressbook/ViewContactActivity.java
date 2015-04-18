@@ -7,7 +7,6 @@ import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -18,15 +17,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
 
 public class ViewContactActivity extends Activity {
-
-    // Instance of the DBHelper class
-    private static DBAdapter helper;
 
     private int contactId;
     private String contactFirstName, contactLastName, contactPhone, contactEmail;
@@ -40,12 +34,10 @@ public class ViewContactActivity extends Activity {
         setContentView(R.layout.activity_view_contact);
 
         contactImage = (ImageView) findViewById(R.id.contactImage);
-        contactImage.setImageResource(R.drawable.ic_launcher);
+        contactImage.setImageResource(R.drawable.contact_high);
         nameView  = (TextView) findViewById(R.id.firstNameView);
         phoneView = (TextView) findViewById(R.id.phoneNumberView);
         mailView = (TextView) findViewById(R.id.emailAddressView);
-
-        helper = new DBAdapter(this);
 
         // Receive the name information for the contact to show from the MainActivity
         Bundle bundle = getIntent().getExtras();
@@ -54,7 +46,6 @@ public class ViewContactActivity extends Activity {
     }
 
     public void displayDetails() {
-        //ArrayList contactDetails = helper.getContactDetails(contactId);
 
         String columns[] = new String[] {
                 ContentProviderContract.FIRSTNAME,
@@ -67,8 +58,7 @@ public class ViewContactActivity extends Activity {
         ContentResolver cr = getContentResolver();
         final Uri contactsUri = ContentProviderContract.CONTACTS_URI;
         Cursor cursor = cr.query(contactsUri, columns, ContentProviderContract.ID+"="+contactId, null, null, null);
-        Log.d("addressApp","cursor: "+cursor);
-        ArrayList contactDetails = new ArrayList();
+
         while(cursor.moveToNext()) {
             contactFirstName = cursor.getString(0);
             contactLastName = cursor.getString(1);
@@ -78,11 +68,6 @@ public class ViewContactActivity extends Activity {
 
         }
 
-        //contactFirstName = (String) contactDetails.get(0);
-        //contactLastName = (String) contactDetails.get(1);
-        //contactPhone = (String) contactDetails.get(2);
-        //contactEmail = (String) contactDetails.get(3);
-        //byte[] photo = (byte[]) contactDetails.get(4);
         ByteArrayInputStream imageStream = new ByteArrayInputStream(photo);
         Bitmap image= BitmapFactory.decodeStream(imageStream);
 
@@ -116,14 +101,14 @@ public class ViewContactActivity extends Activity {
         // Start EditContact Activity with Id information
         Bundle bundle = new Bundle();
         bundle.putInt("contactId",contactId);
-        Intent intent = new Intent(this, EditContactActivity.class); //.putExtras(bundle);
+        Intent intent = new Intent(this, AddContactActivity.class); //.putExtras(bundle);
         intent.putExtras(bundle);
         startActivity(intent);
     }
 
     public void deleteDetails() {
-        // Call the delete Method in the DBHelper class
-        helper.deleteContact(contactId);
+        // Call the delete Method in Content Provider
+        int number = getContentResolver().delete(ContentProviderContract.CONTACTS_URI,ContentProviderContract.ID+"="+contactId, null);
 
         // Return to the MainActivity
         Intent intent = new Intent(this, MainActivity.class);

@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -16,10 +15,10 @@ public class DBAdapter {
     String firstName, lastName;
 
     private static DBHelper dbHelper;
-    public DBAdapter(Context context) {
-        dbHelper = new DBHelper(context);
+    public DBAdapter(Context context, String name, CursorFactory factory, int version) {
+        dbHelper = new DBHelper(context, name, factory, version);
     }
-
+/*
     public long insertData(String firstName, String lastName, String phone, String mail, byte[] image) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -109,11 +108,11 @@ public class DBAdapter {
         int count = db.delete(DBHelper.TABLE, DBHelper.ID + "=" + contactId, null);
         return count;
     }
-
+*/
     static class DBHelper extends SQLiteOpenHelper {
 
-        public static final int DATABASE_VERSION = 7;
-        public static final String DATABASE_NAME = "contactsDB";
+        //public static final int DATABASE_VERSION = 9;
+        //public static final String DATABASE_NAME = "contactsDB";
         public static final String TABLE = "contacts";
         public static final String ID = "_id";
         public static final String FIRSTNAME = "firstName";
@@ -126,8 +125,10 @@ public class DBAdapter {
 
         public static final String DROP_TABLE = "DROP TABLE IF EXISTS " + TABLE;
 
-        public DBHelper(Context context) {
-            super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        public DBHelper(Context context,String name, CursorFactory factory,
+                        int version) {
+
+            super(context, name, factory, version);
         }
 
         @Override

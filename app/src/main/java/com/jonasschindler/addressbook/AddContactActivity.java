@@ -1,12 +1,14 @@
 package com.jonasschindler.addressbook;
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -18,19 +20,17 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 public class AddContactActivity extends Activity {
 
-    //DBAdapter.DBHelper dbHelper;
-    private static DBAdapter dbHelper;
-    //MainActivity mainActivity = new MainActivity();
-
-    String firstName;
-    Toast toast;
-    String lastName, phone, mail;
-    EditText addFirstName, addLastName, addPhone, addMail;
-    ImageView addImage;
+    private String contactFirstName, contactLastName, contactPhone, contactEmail;
+    private int contactId;
+    private byte[] photo;
+    private EditText addFirstName, addLastName, addPhone, addMail;
+    private ImageView addImage;
+    private boolean newContact;
 
     private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
 
@@ -46,8 +46,47 @@ public class AddContactActivity extends Activity {
         addPhone = (EditText) findViewById(R.id.addPhone);
         addMail = (EditText) findViewById(R.id.addMail);
 
-        dbHelper = new DBAdapter(this);
-        //dbHelper.getWritableDatabase();
+        // Receive the id information for the contact to edit from the ViewContact Activity
+        Bundle bundle = getIntent().getExtras();
+
+        if (bundle != null) {
+            contactId = bundle.getInt("contactId");
+            fillContactData();
+            setTitle("Edit contact");
+            newContact = false;
+        } else {
+            setTitle("Add new contact");
+            newContact = true;
+        }
+    }
+
+    public void fillContactData() {
+        String columns[] = new String[] {
+                ContentProviderContract.FIRSTNAME,
+                ContentProviderContract.LASTNAME,
+                ContentProviderContract.PHONE,
+                ContentProviderContract.EMAIL,
+                ContentProviderContract.IMAGE
+        };
+
+        ContentResolver cr = getContentResolver();
+        final Uri contactsUri = ContentProviderContract.CONTACTS_URI;
+        Cursor cursor = cr.query(contactsUri, columns, ContentProviderContract.ID+"="+contactId, null, null, null);
+        while(cursor.moveToNext()) {
+            contactFirstName = cursor.getString(0);
+            contactLastName = cursor.getString(1);
+            contactPhone = cursor.getString(2);
+            contactEmail = cursor.getString(3);
+            photo = cursor.getBlob(4);
+        }
+
+        ByteArrayInputStream imageStream = new ByteArrayInputStream(photo);
+        Bitmap image= BitmapFactory.decodeStream(imageStream);
+        addFirstName.setText(contactFirstName);
+        addLastName.setText(contactLastName);
+        addPhone.setText(contactPhone);
+        addMail.setText(contactEmail);
+        addImage.setImageBitmap(image);
     }
 
     public void saveToDb(View view) {
@@ -55,23 +94,45 @@ public class AddContactActivity extends Activity {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Bitmap contactImage = ((BitmapDrawable)addImage.getDrawable()).getBitmap();
         contactImage.compress(Bitmap.CompressFormat.PNG, 100, baos);
-        byte[] photo = baos.toByteArray();
+        photo = baos.toByteArray();
 
-        firstName = addFirstName.getText().toString();
-        lastName = addLastName.getText().toString();
-        phone = addPhone.getText().toString();
-        mail = addMail.getText().toString();
+        String firstName = addFirstName.getText().toString();
+        String lastName = addLastName.getText().toString();
+        String phone = addPhone.getText().toString();
+        String mail = addMail.getText().toString();
 
         if (!firstName.isEmpty()) {
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(ContentProviderContract.FIRSTNAME, firstName);
+            contentValues.put(ContentProviderContract.LASTNAME, lastName);
+            contentValues.put(ContentProviderContract.PHONE, phone);
+            contentValues.put(ContentProviderContract.EMAIL, mail);
+            contentValues.put(ContentProviderContract.IMAGE, photo);
 
-            dbHelper.insertData(firstName, lastName, phone, mail, photo);
+            if (newContact) {
+                Uri uri = getContentResolver().insert(ContentProviderContract.CONTACTS_URI, contentValues);
+                // Start the ViewContactActivity showing the added contact
+                //Bundle bundle = new Bundle();
+                //bundle.putInt("contactId", contactId);
+                Intent intent = new Intent(this, MainActivity.class);
+                //intent.putExtras(bundle);
+                intent.addFlags(intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+            } else {
+                // Start the ViewContactActivity showing the edited contact
+                int number = getContentResolver().update(ContentProviderContract.CONTACTS_URI, contentValues,ContentProviderContract.ID+"="+contactId, null);
+                Bundle bundle = new Bundle();
+                bundle.putInt("contactId", contactId);
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.putExtras(bundle);
+                intent.addFlags(intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+            }
 
-            // Start the MainActivity
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
         }
         else {
-            toast.makeText(this, "Name must be entered!", Toast.LENGTH_SHORT).show();
+            Toast toast = Toast.makeText(this, "Name must be entered!", Toast.LENGTH_SHORT);
+            toast.show();
         }
 
     }
