@@ -23,7 +23,7 @@ import android.widget.Toast;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
-public class AddContactActivity extends Activity {
+public class AddEditContactActivity extends Activity {
 
     private String contactFirstName, contactLastName, contactPhone, contactEmail;
     private int contactId;
@@ -138,7 +138,7 @@ public class AddContactActivity extends Activity {
     }
 
     public void openPopupMenu(View view) {
-        PopupMenu popup = new PopupMenu(AddContactActivity.this, addImage);
+        PopupMenu popup = new PopupMenu(AddEditContactActivity.this, addImage);
         popup.getMenuInflater().inflate(R.menu.popup_menu, popup.getMenu());
 
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
