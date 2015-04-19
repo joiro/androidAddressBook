@@ -22,9 +22,11 @@ import android.widget.Toast;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 public class AddEditContactActivity extends Activity {
 
+    private static final int IMAGE_SELECTION = 1;
     private String contactFirstName, contactLastName, contactPhone, contactEmail;
     private int contactId;
     private byte[] photo;
@@ -150,6 +152,7 @@ public class AddEditContactActivity extends Activity {
                 }
                 if (id == R.id.choosePhoto) {
                     Log.d("addressApp", "choose Photo");
+                    chooseFile();
                     return true;
                 }
                 return true;
@@ -163,8 +166,24 @@ public class AddEditContactActivity extends Activity {
         startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
     }
 
+    public void chooseFile() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, IMAGE_SELECTION);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == IMAGE_SELECTION) {
+            Log.d("addressApp", "Image Selection ok");
+            Uri uri = data.getData();
+            Bitmap image = null;
+            try {
+                image = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            addImage.setImageBitmap(image);
+        }
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 Log.d("addressApp", "result ok");

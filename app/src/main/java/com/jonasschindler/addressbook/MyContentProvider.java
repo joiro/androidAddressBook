@@ -43,7 +43,7 @@ public class MyContentProvider extends ContentProvider {
     @Override
     public boolean onCreate() {
         //dbAdapter = new DBAdapter(getContext(), DBNAME, null, 8);
-        dbHelper = new DBAdapter.DBHelper(getContext(), DBNAME, null, 8);
+        dbHelper = new DBAdapter.DBHelper(getContext(), DBNAME, null, 9);
 
         return true;
     }

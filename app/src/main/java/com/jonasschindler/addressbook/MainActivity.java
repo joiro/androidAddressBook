@@ -37,14 +37,6 @@ public class MainActivity extends Activity {
     }
 
     public void showAllContacts() {
-        // Receive the names and images from the database
-        //final ArrayList contactId = dbAdapter.getAllIds();
-        //final ArrayList contacts = dbAdapter.getAllNames();
-        //final ArrayList images = dbAdapter.getAllImages();
-
-        //ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,R.layout.rowlayout,R.id.itemname,contacts);
-        //listView = (ListView) findViewById(R.id.contactsListView);
-        //listView.setAdapter(arrayAdapter);
 
         String columns[] = new String[] {
                 ContentProviderContract.ID,
@@ -99,7 +91,7 @@ public class MainActivity extends Activity {
 
     // Called when add contact button is clicked, opens the Add ContactActivity
     public void addContact(View view) {
-        Intent intent = new Intent(this, AddContactActivity.class);
+        Intent intent = new Intent(this, AddEditContactActivity.class);
         startActivity(intent);
     }
 

@@ -101,7 +101,7 @@ public class ViewContactActivity extends Activity {
         // Start EditContact Activity with Id information
         Bundle bundle = new Bundle();
         bundle.putInt("contactId",contactId);
-        Intent intent = new Intent(this, AddContactActivity.class); //.putExtras(bundle);
+        Intent intent = new Intent(this, AddEditContactActivity.class); //.putExtras(bundle);
         intent.putExtras(bundle);
         startActivity(intent);
     }

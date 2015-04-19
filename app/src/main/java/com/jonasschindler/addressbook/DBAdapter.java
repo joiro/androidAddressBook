@@ -12,8 +12,6 @@ import java.util.ArrayList;
 
 public class DBAdapter {
 
-    String firstName, lastName;
-
     private static DBHelper dbHelper;
     public DBAdapter(Context context, String name, CursorFactory factory, int version) {
         dbHelper = new DBHelper(context, name, factory, version);
