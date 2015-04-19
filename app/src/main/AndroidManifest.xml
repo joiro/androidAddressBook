@@ -28,8 +28,6 @@
             android:label="@string/title_activity_add_contact" >
         </activity>
         <activity android:name=".ViewContactActivity" />
-        <activity android:name=".EditContactActivity" />
-
         <provider
             android:name=".MyContentProvider"
             android:authorities="com.jonasschindler.addressbook.MyContentProvider"

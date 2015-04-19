@@ -143,7 +143,6 @@ public class AddContactActivity extends Activity {
 
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             public boolean onMenuItemClick(MenuItem item) {
-                //Toast.makeText(EditContactActivity.this, "You Clicked : " + item.getTitle(), Toast.LENGTH_SHORT).show();
                 int id = item.getItemId();
                 if (id == R.id.takePhoto) {
                     openCamera();

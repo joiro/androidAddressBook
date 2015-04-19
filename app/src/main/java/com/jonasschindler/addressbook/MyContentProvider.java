@@ -65,7 +65,6 @@ public class MyContentProvider extends ContentProvider {
         }
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         Cursor cursor = db.query(table, projection, selection, null, null, null, null);
-        db.close();
         return cursor;
     }
 
