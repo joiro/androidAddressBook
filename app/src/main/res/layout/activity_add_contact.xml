@@ -21,23 +21,17 @@
             android:layout_marginBottom="20dp"
             android:layout_weight="1">
 
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="fill_parent"
-                android:layout_height="match_parent"
-                android:text="Add new contact"
-                android:textColor="@android:color/black"
-                android:textSize="20dp"
-                android:gravity="center_horizontal"
-                android:layout_weight="1" />
-
             <Button
                 android:id="@+id/buttonSaveContact"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 android:onClick="saveToDb"
-                android:text="√"
-                android:layout_weight="1" />
+                android:text="Okay"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:textSize="15dp"
+                android:textColor="@android:color/white"
+                android:background="@drawable/confirm_button" />
 
         </LinearLayout>
 
@@ -63,64 +57,159 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
 
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textPersonName"
-            android:ems="10"
-            android:id="@+id/addFirstName"
-            android:hint="First Name" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
 
-        <EditText
-            android:id="@+id/addLastName"
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+                android:ems="10"
+                android:id="@+id/addFirstName"
+                android:hint="First Name" />
+
+            <EditText
+                android:id="@+id/addLastName"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+                android:ems="10"
+                android:hint="Last Name" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="4"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:id="@+id/imageView3"
+                    android:background="@drawable/phone"
+                    android:layout_gravity="center_horizontal" />
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/addPhone"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:inputType="phone"
+                android:ems="10"
+                android:hint="Phone"
+                android:layout_weight="1" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:inputType="textPersonName"
-            android:ems="10"
-            android:hint="Last Name" />
-    </LinearLayout>
+            android:id="@+id/phone2Layout"
+            android:visibility="gone">
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="4"
+                android:gravity="center_vertical" >
 
-        <ImageView
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:id="@+id/imageView5"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/phone" />
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/addPhone2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Phone"
+                android:layout_weight="1"
+                android:inputType="phone" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:id="@+id/imageView3"
-            android:layout_weight="3" />
+            android:layout_height="wrap_content">
 
-        <EditText
-            android:id="@+id/addPhone"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="phone"
-            android:ems="10"
-            android:hint="Phone"
-            android:layout_weight="1" />
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="4"
+                android:gravity="center_vertical">
 
-    </LinearLayout>
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:id="@+id/imageView4"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/email" />
+            </LinearLayout>
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
+            <EditText
+                android:id="@+id/addMail"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"
+                android:ems="10"
+                android:hint="Email"
+                android:layout_weight="1" />
+        </LinearLayout>
 
-        <ImageView
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:id="@+id/imageView4"
-            android:layout_weight="3" />
-
-        <EditText
-            android:id="@+id/addMail"
-            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textEmailAddress"
-            android:ems="10"
-            android:hint="Email"
-            android:layout_weight="1" />
+            android:id="@+id/mail2Layout"
+            android:visibility="gone" >
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="4"
+                android:gravity="center_vertical" >
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:id="@+id/imageView6"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/email" />
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/addMail2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"
+                android:ems="10"
+                android:hint="Email"
+                android:layout_weight="1" />
+        </LinearLayout>
     </LinearLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="add field"
+        android:id="@+id/addField"
+        android:onClick="openPopupMenuAddField" />
 
 </LinearLayout>

@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +43,11 @@ public class CustomArrayAdapter<String> extends ArrayAdapter<String>{
         ByteArrayInputStream imageStream = new ByteArrayInputStream(photo);
         Bitmap theImage= BitmapFactory.decodeStream(imageStream);
         contactImage.setImageBitmap(theImage);
+        try {
+            imageStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return rowView;
 
     }

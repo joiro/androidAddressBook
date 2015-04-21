@@ -11,21 +11,25 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Layout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 
-public class ViewContactActivity extends Activity {
+public class ViewContactActivity extends Activity implements View.OnClickListener{
 
     private int contactId;
-    private String contactFirstName, contactLastName, contactPhone, contactEmail;
+    private String contactFirstName, contactLastName, contactPhone, contactPhone2, contactEmail, contactEmail2;
     byte[] photo;
-    private TextView nameView, phoneView, mailView;
+    private TextView nameView, phoneView, phoneView2, mailView, mailView2;
+    private LinearLayout layoutPhone1, layoutPhone2, layoutMail1, layoutMail2;
     private ImageView contactImage;
 
     @Override
@@ -37,7 +41,17 @@ public class ViewContactActivity extends Activity {
         contactImage.setImageResource(R.drawable.contact_high);
         nameView  = (TextView) findViewById(R.id.firstNameView);
         phoneView = (TextView) findViewById(R.id.phoneNumberView);
+        phoneView.setOnClickListener(this);
+        phoneView2 = (TextView) findViewById(R.id.phoneNumberView2);
+        phoneView2.setOnClickListener(this);
         mailView = (TextView) findViewById(R.id.emailAddressView);
+        mailView.setOnClickListener(this);
+        mailView2 = (TextView) findViewById(R.id.emailAddressView2);
+        mailView2.setOnClickListener(this);
+        layoutPhone1 = (LinearLayout) findViewById(R.id.layoutPhone1);
+        layoutPhone2 = (LinearLayout) findViewById(R.id.layoutPhone2);
+        layoutMail1 = (LinearLayout) findViewById(R.id.layoutMail1);
+        layoutMail2 = (LinearLayout) findViewById(R.id.layoutMail2);
 
         // Receive the name information for the contact to show from the MainActivity
         Bundle bundle = getIntent().getExtras();
@@ -51,7 +65,9 @@ public class ViewContactActivity extends Activity {
                 ContentProviderContract.FIRSTNAME,
                 ContentProviderContract.LASTNAME,
                 ContentProviderContract.PHONE,
+                ContentProviderContract.PHONE_TWO,
                 ContentProviderContract.EMAIL,
+                ContentProviderContract.EMAIL_TWO,
                 ContentProviderContract.IMAGE
         };
 
@@ -63,8 +79,10 @@ public class ViewContactActivity extends Activity {
             contactFirstName = cursor.getString(0);
             contactLastName = cursor.getString(1);
             contactPhone = cursor.getString(2);
-            contactEmail = cursor.getString(3);
-            photo = cursor.getBlob(4);
+            contactPhone2 = cursor.getString(3);
+            contactEmail = cursor.getString(4);
+            contactEmail2 = cursor.getString(5);
+            photo = cursor.getBlob(6);
         }
         cursor.close();
 
@@ -72,20 +90,53 @@ public class ViewContactActivity extends Activity {
         Bitmap image= BitmapFactory.decodeStream(imageStream);
 
         nameView.setText(contactFirstName +" "+contactLastName);
-        hideView(contactPhone, phoneView);
-        hideView(contactEmail, mailView);
+        showView(contactPhone, phoneView, layoutPhone1);
+        showView(contactPhone2, phoneView2, layoutPhone2);
+        showView(contactEmail, mailView, layoutMail1);
+        showView(contactEmail2, mailView2, layoutMail2);
         contactImage.setImageBitmap(image);
+        try {
+            imageStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void hideView(String field, TextView view) {
-        if(field.isEmpty()) {
-            view.setVisibility(View.GONE);
-        } else {
+    public void showView(String field, TextView view, LinearLayout layout) {
+        if(!field.isEmpty()) {
+            layout.setVisibility(View.VISIBLE);
             view.setText(field);
         }
     }
 
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.phoneNumberView:
+                Uri number = Uri.parse("tel:" + phoneView.getText());
+                Intent callIntent = new Intent(Intent.ACTION_CALL, number);
+                startActivity(callIntent);
+                break;
+            case R.id.phoneNumberView2:
+                Uri number2 = Uri.parse("tel:" + phoneView2.getText());
+                Intent callIntent2 = new Intent(Intent.ACTION_CALL, number2);
+                startActivity(callIntent2);
+                break;
+            case R.id.emailAddressView:
+                Uri mail = Uri.parse("mailto:"+mailView.getText());
+                Intent mailIntent = new Intent(Intent.ACTION_SENDTO, mail);
+                startActivity(Intent.createChooser(mailIntent, "Send Email"));
+                break;
+            case R.id.emailAddressView2:
+                Uri mail2 = Uri.parse("mailto:"+mailView2.getText());
+                Intent mailIntent2 = new Intent(Intent.ACTION_SENDTO, mail2);
+                startActivity(Intent.createChooser(mailIntent2, "Send Email"));
+                break;
+        }
+    }
+/*
     public void callContact(View view) {
+
         Uri number = Uri.parse("tel:" + phoneView.getText());
         Intent callIntent = new Intent(Intent.ACTION_CALL, number);
         startActivity(callIntent);
@@ -96,6 +147,7 @@ public class ViewContactActivity extends Activity {
         Intent mailIntent = new Intent(Intent.ACTION_SENDTO, mail);
         startActivity(Intent.createChooser(mailIntent, "Send Email"));
     }
+*/
 
     public void editDetails() {
         // Start EditContact Activity with Id information
@@ -117,27 +169,22 @@ public class ViewContactActivity extends Activity {
     }
 
     public Dialog alertDialog() {
-        // 1. Instantiate an AlertDialog.Builder with its constructor
+        // Instantiate an AlertDialog.Builder with its constructor
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-        // 2. Chain together various setter methods to set the dialog characteristics
         builder.setMessage("Are you sure you want to delete this contact?");
-                //.setTitle("Delete Contact: "+contactName);
-
         builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                // User clicked OK button
+                // user clicked OK button
                 deleteDetails();
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                // User cancelled the dialog
+                // user cancelled the dialog
                 Log.d("addressApp", "alert cancelled");
             }
         });
-
-        // 3. Get the AlertDialog from create()
+        // get the AlertDialog from create()
         return builder.create();
     }
 
@@ -151,22 +198,16 @@ public class ViewContactActivity extends Activity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.edit_contact) {
             this.editDetails();
             return true;
         }
         if (id == R.id.delete_contact) {
             this.alertDialog().show();
-            //this.deleteDetails();
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 }

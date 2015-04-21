@@ -24,10 +24,12 @@ public class DBAdapter {
         public static final String FIRSTNAME = "firstName";
         public static final String LASTNAME = "lastName";
         public static final String PHONE = "phone";
+        public static final String PHONE_TWO = "phoneTwo";
         public static final String EMAIL = "email";
+        public static final String EMAIL_TWO = "emailTwo";
         public static final String IMAGE = "image";
         public static final String CREATE_TABLE = "CREATE TABLE " + TABLE + "(" + ID + " INTEGER PRIMARY KEY AUTOINCREMENT ," +
-              FIRSTNAME + " VARCHAR(128) NOT NULL," + LASTNAME + " VARCHAR(128) NOT NULL," + PHONE + " VARCHAR(30) ," + EMAIL + " VARCHAR(30) ," + IMAGE + " BLOB" + ");";
+              FIRSTNAME + " VARCHAR(128) NOT NULL," + LASTNAME + " VARCHAR(128) NOT NULL," + PHONE + " VARCHAR(30) ," + PHONE_TWO + " VARCHAR(30) ," + EMAIL + " VARCHAR(30) ," + EMAIL_TWO + " VARCHAR(30) ," + IMAGE + " BLOB" + ");";
 
         public static final String DROP_TABLE = "DROP TABLE IF EXISTS " + TABLE;
 
@@ -39,12 +41,6 @@ public class DBAdapter {
         public void onCreate(SQLiteDatabase db) {
             Log.d("addressApp", "DBHelper onCreate");
             db.execSQL(CREATE_TABLE);
-            db.execSQL("INSERT INTO contacts (firstName, lastName, phone, email) " + "VALUES " +
-                    "('Jonas', 'Schindler', '1234', 'jonas.schindler@gmail.com') ");
-            db.execSQL("INSERT INTO contacts (firstName, lastName, phone, email) " + "VALUES " +
-                    "('Peter', 'Fonda', '5678', 'example@example.com') ");
-            db.execSQL("INSERT INTO contacts (firstName, LastName, phone, email) " + "VALUES " +
-                    "('Jimmy', 'Page', '91011', 'beispiel@gmail.com') ");
         }
 
         @Override

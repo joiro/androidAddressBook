@@ -39,89 +39,154 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="10dp">
+        android:layout_margin="10dp"
+        android:paddingTop="10dp">
 
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp">
+            android:layout_marginBottom="15dp"
+            android:id="@+id/layoutPhone1"
+            android:visibility="visible"
+            android:onClick="onClick">
 
             <LinearLayout
                 android:orientation="vertical"
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="4"
                 android:gravity="center_horizontal">
 
                 <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
                     android:id="@+id/imageView"
-                    android:background="@drawable/ic_launcher" />
+                    android:background="@drawable/phone" />
             </LinearLayout>
 
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="4">
+            <TextView
+                android:id="@+id/phoneNumberView"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:clickable="true"
+                android:textSize="20sp"
+                android:textColor="@android:color/black"
+                android:layout_weight="1"
+                android:hint="no phone number"
+                android:visibility="visible"
+                android:onClick="onClick" />
 
-                <TextView
-                    android:id="@+id/phoneNumberView"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:text="phone number"
-                    android:clickable="true"
-                    android:textSize="20sp"
-                    android:textColor="@android:color/black"
-                    android:onClick="callContact" />
-            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginRight="10dp">
+            android:layout_marginBottom="15dp"
+            android:id="@+id/layoutPhone2"
+            android:visibility="visible"
+            android:onClick="onClick">
 
             <LinearLayout
                 android:orientation="vertical"
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:gravity="center_horizontal" >
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:id="@+id/imageView7"
+                    android:background="@drawable/phone" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/phoneNumberView2"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:clickable="true"
+                android:textSize="20sp"
+                android:textColor="@android:color/black"
                 android:layout_weight="1"
+                android:hint="no phone number"
+                android:visibility="visible"
+                android:onClick="onClick" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/layoutMail1"
+            android:visibility="visible"
+            android:onClick="onClick"
+            android:layout_marginBottom="15dp"
+            android:layout_marginTop="10dp">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
                 android:gravity="center_horizontal">
 
                 <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
                     android:id="@+id/imageView2"
-                    android:background="@drawable/ic_launcher" />
+                    android:background="@drawable/email" />
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/emailAddressView"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:clickable="true"
+                android:textSize="20sp"
+                android:textColor="@android:color/black"
+                android:layout_weight="1"
+                android:hint="no email address"
+                android:visibility="visible"
+                android:onClick="onClick" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/layoutMail2"
+            android:visibility="visible"
+            android:onClick="onClick"
+            android:layout_marginBottom="15dp">
 
             <LinearLayout
                 android:orientation="vertical"
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="4">
+                android:layout_weight="4"
+                android:gravity="center_horizontal" >
 
-                <TextView
-                    android:id="@+id/emailAddressView"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:text="email address"
-                    android:clickable="true"
-                    android:textSize="20sp"
-                    android:textColor="@android:color/black"
-                    android:onClick="openEmail"/>
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:id="@+id/imageView8"
+                    android:background="@drawable/email" />
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/emailAddressView2"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:clickable="true"
+                android:textSize="20sp"
+                android:textColor="@android:color/black"
+                android:layout_weight="1"
+                android:hint="no email address"
+                android:visibility="visible"
+                android:onClick="onClick" />
         </LinearLayout>
 
     </LinearLayout>

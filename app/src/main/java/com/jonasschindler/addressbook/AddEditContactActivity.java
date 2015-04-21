@@ -1,7 +1,6 @@
 package com.jonasschindler.addressbook;
 
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -15,25 +14,29 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class AddEditContactActivity extends Activity {
 
     private static final int IMAGE_SELECTION = 1;
-    private String contactFirstName, contactLastName, contactPhone, contactEmail;
+    private String contactFirstName, contactLastName, contactPhone, contactPhone2, contactEmail, contactEmail2;
     private int contactId;
     private byte[] photo;
-    private EditText addFirstName, addLastName, addPhone, addMail;
+    private EditText addFirstName, addLastName, addPhone, addMail, addMail2, addPhone2;
     private ImageView addImage;
     private boolean newContact;
+    private LinearLayout phone2Layout, mail2Layout;
+    private Button addField;
 
     private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
 
@@ -47,7 +50,12 @@ public class AddEditContactActivity extends Activity {
         addFirstName = (EditText) findViewById(R.id.addFirstName);
         addLastName = (EditText) findViewById(R.id.addLastName);
         addPhone = (EditText) findViewById(R.id.addPhone);
+        addPhone2 = (EditText) findViewById(R.id.addPhone2);
         addMail = (EditText) findViewById(R.id.addMail);
+        addMail2 = (EditText) findViewById(R.id.addMail2);
+        phone2Layout = (LinearLayout) findViewById(R.id.phone2Layout);
+        mail2Layout = (LinearLayout) findViewById(R.id.mail2Layout);
+        addField = (Button) findViewById(R.id.addField);
 
         // Receive the id information for the contact to edit from the ViewContact Activity
         Bundle bundle = getIntent().getExtras();
@@ -72,7 +80,9 @@ public class AddEditContactActivity extends Activity {
                 ContentProviderContract.FIRSTNAME,
                 ContentProviderContract.LASTNAME,
                 ContentProviderContract.PHONE,
+                ContentProviderContract.PHONE_TWO,
                 ContentProviderContract.EMAIL,
+                ContentProviderContract.EMAIL_TWO,
                 ContentProviderContract.IMAGE
         };
 
@@ -83,8 +93,10 @@ public class AddEditContactActivity extends Activity {
             contactFirstName = cursor.getString(0);
             contactLastName = cursor.getString(1);
             contactPhone = cursor.getString(2);
-            contactEmail = cursor.getString(3);
-            photo = cursor.getBlob(4);
+            contactPhone2 = cursor.getString(3);
+            contactEmail = cursor.getString(4);
+            contactEmail2 = cursor.getString(5);
+            photo = cursor.getBlob(6);
         }
         cursor.close();
 
@@ -94,8 +106,65 @@ public class AddEditContactActivity extends Activity {
         addFirstName.setText(contactFirstName);
         addLastName.setText(contactLastName);
         addPhone.setText(contactPhone);
+        addPhone2.setText(contactPhone2);
         addMail.setText(contactEmail);
+        addMail2.setText(contactEmail2);
         addImage.setImageBitmap(image);
+        try {
+            imageStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        showView(contactPhone2, addPhone2, phone2Layout);
+        showView(contactEmail2, addMail2, mail2Layout);
+    }
+
+    // displays additional fields if their corresponding data strings are not empty
+    public void showView(String field, EditText view, LinearLayout layout) {
+        if(!field.isEmpty()) {
+            layout.setVisibility(View.VISIBLE);
+            view.setText(field);
+        }
+    }
+
+    // creates popupMenu when user clicks imageView to choose source of contactImage
+    public void openPopupMenuAddField(View view) {
+        PopupMenu popup = new PopupMenu(AddEditContactActivity.this, addField);
+        popup.getMenuInflater().inflate(R.menu.popup_menu_add_field, popup.getMenu());
+
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            public boolean onMenuItemClick(MenuItem item) {
+                int id = item.getItemId();
+                // adds a second phone field
+
+                if (id == R.id.addPhone2) {
+                    Log.d("addressApp", "email field added");
+                    String field = "phone";
+                    addField(field);
+                    return true;
+                }
+                // adds a second email field
+                if (id == R.id.addEmail2) {
+                    Log.d("addressApp", "email field added");
+                    String field = "email";
+                    addField(field);
+                    return true;
+                }
+                return true;
+            }
+        });
+        popup.show();
+    }
+
+    public void addField(String field) {
+        switch (field) {
+            case "phone":
+                phone2Layout.setVisibility(View.VISIBLE);
+                break;
+            case "email":
+                mail2Layout.setVisibility(View.VISIBLE);
+                break;
+        }
     }
 
     // called when user clicks 'save contact' / 'save changes'
@@ -106,12 +175,19 @@ public class AddEditContactActivity extends Activity {
         Bitmap contactImage = ((BitmapDrawable)addImage.getDrawable()).getBitmap();
         contactImage.compress(Bitmap.CompressFormat.PNG, 70, baos);
         photo = baos.toByteArray();
+        try {
+            baos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         // get text from textFields
         String firstName = addFirstName.getText().toString();
         String lastName = addLastName.getText().toString();
         String phone = addPhone.getText().toString();
+        String phone2 = addPhone2.getText().toString();
         String mail = addMail.getText().toString();
+        String mail2 = addMail2.getText().toString();
 
         // checks if firstName field is empty and displays toast if it is
         if (!firstName.isEmpty()) {
@@ -119,7 +195,9 @@ public class AddEditContactActivity extends Activity {
             contentValues.put(ContentProviderContract.FIRSTNAME, firstName);
             contentValues.put(ContentProviderContract.LASTNAME, lastName);
             contentValues.put(ContentProviderContract.PHONE, phone);
+            contentValues.put(ContentProviderContract.PHONE_TWO, phone2);
             contentValues.put(ContentProviderContract.EMAIL, mail);
+            contentValues.put(ContentProviderContract.EMAIL_TWO, mail2);
             contentValues.put(ContentProviderContract.IMAGE, photo);
 
             // checks if contacts gets created or updated depending on the state of the boolean 'newContact'
@@ -145,7 +223,7 @@ public class AddEditContactActivity extends Activity {
 
         }
         else {
-            Toast toast = Toast.makeText(this, "Name must be entered!", Toast.LENGTH_SHORT);
+            Toast toast = Toast.makeText(this, "First Name cannot be empty!", Toast.LENGTH_SHORT);
             toast.show();
         }
 
@@ -154,7 +232,7 @@ public class AddEditContactActivity extends Activity {
     // creates popupMenu when user clicks imageView to choose source of contactImage
     public void openPopupMenu(View view) {
         PopupMenu popup = new PopupMenu(AddEditContactActivity.this, addImage);
-        popup.getMenuInflater().inflate(R.menu.popup_menu, popup.getMenu());
+        popup.getMenuInflater().inflate(R.menu.popup_menu_image, popup.getMenu());
 
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             public boolean onMenuItemClick(MenuItem item) {
@@ -195,6 +273,7 @@ public class AddEditContactActivity extends Activity {
             if (resultCode == RESULT_OK) {
                 Log.d("addressApp", "result ok");
                 Bitmap photo = (Bitmap) data.getExtras().get("data");
+
                 addImage.setImageBitmap(photo);
             } else if (resultCode == RESULT_CANCELED) {
                 // user aborted image capture
@@ -208,14 +287,23 @@ public class AddEditContactActivity extends Activity {
         }
         // return from gallery
         if (requestCode == IMAGE_SELECTION) {
-            Uri uri = data.getData();
-            Bitmap image = null;
-            try {
-                image = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (resultCode == RESULT_OK) {
+                Uri uri = data.getData();
+                Bitmap image = null;
+                try {
+                    image = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                addImage.setImageBitmap(image);
             }
-            addImage.setImageBitmap(image);
+            else if (resultCode == RESULT_CANCELED) {
+                // user aborted image selection
+            } else {
+                // image selection failed
+
+            }
+
         }
     }
 
@@ -231,12 +319,11 @@ public class AddEditContactActivity extends Activity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.delete_contact) {
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
-
 */
 }

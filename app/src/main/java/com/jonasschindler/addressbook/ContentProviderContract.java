@@ -16,7 +16,11 @@ public class ContentProviderContract {
 
     public static final String PHONE = "phone";
 
+    public static final String PHONE_TWO = "phoneTwo";
+
     public static final String EMAIL = "email";
+
+    public static final String EMAIL_TWO = "emailTwo";
 
     public static final String IMAGE = "image";
 }
