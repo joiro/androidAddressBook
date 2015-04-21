@@ -13,7 +13,6 @@ public class MyContentProvider extends ContentProvider {
 
     private String table;
     private static final String DBNAME = "contacts";
-    //private static DBAdapter dbAdapter;
     private static DBAdapter.DBHelper dbHelper;
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
     static {
@@ -23,7 +22,6 @@ public class MyContentProvider extends ContentProvider {
 
     @Override
     public String getType(Uri uri) {
-        // TODO: Implement this to handle requests for the MIME type of the data
         // at the given URI.
         throw new UnsupportedOperationException("Not yet implemented");
     }
@@ -36,14 +34,13 @@ public class MyContentProvider extends ContentProvider {
 
         db.close();
 
-        Uri nu = ContentUris.withAppendedId(uri, id);
-        return nu;
+        Uri dbUri = ContentUris.withAppendedId(uri, id);
+        return dbUri;
     }
 
     @Override
     public boolean onCreate() {
-        //dbAdapter = new DBAdapter(getContext(), DBNAME, null, 8);
-        dbHelper = new DBAdapter.DBHelper(getContext(), DBNAME, null, 9);
+        dbHelper = new DBAdapter.DBHelper(getContext(), DBNAME, null, 10);
 
         return true;
     }

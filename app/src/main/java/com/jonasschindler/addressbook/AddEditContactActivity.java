@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class AddEditContactActivity extends Activity {
@@ -42,7 +43,7 @@ public class AddEditContactActivity extends Activity {
         setContentView(R.layout.activity_add_contact);
 
         addImage = (ImageView) findViewById(R.id.addImage);
-        addImage.setImageResource(R.drawable.ic_launcher);
+        addImage.setImageResource(R.drawable.contact_high);
         addFirstName = (EditText) findViewById(R.id.addFirstName);
         addLastName = (EditText) findViewById(R.id.addLastName);
         addPhone = (EditText) findViewById(R.id.addPhone);
@@ -51,6 +52,7 @@ public class AddEditContactActivity extends Activity {
         // Receive the id information for the contact to edit from the ViewContact Activity
         Bundle bundle = getIntent().getExtras();
 
+        // fill data in editText fields and change activityTile depending if 'add' or 'edit' is called
         if (bundle != null) {
             contactId = bundle.getInt("contactId");
             fillContactData();
@@ -62,7 +64,10 @@ public class AddEditContactActivity extends Activity {
         }
     }
 
+    // fills contacts information to textFields, if 'edit contact' was chosen
     public void fillContactData() {
+
+        // columns that get queried from contentProvider
         String columns[] = new String[] {
                 ContentProviderContract.FIRSTNAME,
                 ContentProviderContract.LASTNAME,
@@ -71,9 +76,9 @@ public class AddEditContactActivity extends Activity {
                 ContentProviderContract.IMAGE
         };
 
-        ContentResolver cr = getContentResolver();
+        //ContentResolver cr = getContentResolver();
         final Uri contactsUri = ContentProviderContract.CONTACTS_URI;
-        Cursor cursor = cr.query(contactsUri, columns, ContentProviderContract.ID+"="+contactId, null, null, null);
+        Cursor cursor = getContentResolver().query(contactsUri, columns, ContentProviderContract.ID + "=" + contactId, null, null, null);
         while(cursor.moveToNext()) {
             contactFirstName = cursor.getString(0);
             contactLastName = cursor.getString(1);
@@ -81,7 +86,9 @@ public class AddEditContactActivity extends Activity {
             contactEmail = cursor.getString(3);
             photo = cursor.getBlob(4);
         }
+        cursor.close();
 
+        // transform & decode image, and put contact information into textFields
         ByteArrayInputStream imageStream = new ByteArrayInputStream(photo);
         Bitmap image= BitmapFactory.decodeStream(imageStream);
         addFirstName.setText(contactFirstName);
@@ -91,18 +98,22 @@ public class AddEditContactActivity extends Activity {
         addImage.setImageBitmap(image);
     }
 
+    // called when user clicks 'save contact' / 'save changes'
     public void saveToDb(View view) {
 
+        // transform image to byteArray and compress it
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Bitmap contactImage = ((BitmapDrawable)addImage.getDrawable()).getBitmap();
-        contactImage.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        contactImage.compress(Bitmap.CompressFormat.PNG, 70, baos);
         photo = baos.toByteArray();
 
+        // get text from textFields
         String firstName = addFirstName.getText().toString();
         String lastName = addLastName.getText().toString();
         String phone = addPhone.getText().toString();
         String mail = addMail.getText().toString();
 
+        // checks if firstName field is empty and displays toast if it is
         if (!firstName.isEmpty()) {
             ContentValues contentValues = new ContentValues();
             contentValues.put(ContentProviderContract.FIRSTNAME, firstName);
@@ -111,6 +122,7 @@ public class AddEditContactActivity extends Activity {
             contentValues.put(ContentProviderContract.EMAIL, mail);
             contentValues.put(ContentProviderContract.IMAGE, photo);
 
+            // checks if contacts gets created or updated depending on the state of the boolean 'newContact'
             if (newContact) {
                 Uri uri = getContentResolver().insert(ContentProviderContract.CONTACTS_URI, contentValues);
                 // Start the ViewContactActivity showing the added contact
@@ -139,6 +151,7 @@ public class AddEditContactActivity extends Activity {
 
     }
 
+    // creates popupMenu when user clicks imageView to choose source of contactImage
     public void openPopupMenu(View view) {
         PopupMenu popup = new PopupMenu(AddEditContactActivity.this, addImage);
         popup.getMenuInflater().inflate(R.menu.popup_menu, popup.getMenu());
@@ -146,12 +159,13 @@ public class AddEditContactActivity extends Activity {
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             public boolean onMenuItemClick(MenuItem item) {
                 int id = item.getItemId();
+                // opens Camera for option 1
                 if (id == R.id.takePhoto) {
                     openCamera();
                     return true;
                 }
+                // open default galleryApp for option 2
                 if (id == R.id.choosePhoto) {
-                    Log.d("addressApp", "choose Photo");
                     chooseFile();
                     return true;
                 }
@@ -161,20 +175,39 @@ public class AddEditContactActivity extends Activity {
         popup.show();
     }
 
+    // sends intent to open cameraApp
     public void openCamera() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
     }
 
+    // sends intent to open default galleryApp
     public void chooseFile() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, IMAGE_SELECTION);
     }
 
+    // return method from camera or gallery to receive the image file
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // return from camera
+        if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                Log.d("addressApp", "result ok");
+                Bitmap photo = (Bitmap) data.getExtras().get("data");
+                addImage.setImageBitmap(photo);
+            } else if (resultCode == RESULT_CANCELED) {
+                // user aborted image capture
+                Toast toast = Toast.makeText(this, "Capture cancelled!", Toast.LENGTH_SHORT);
+                toast.show();
+            } else {
+                // Image capture failed
+                Toast toast = Toast.makeText(this, "Image capture failed!", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        }
+        // return from gallery
         if (requestCode == IMAGE_SELECTION) {
-            Log.d("addressApp", "Image Selection ok");
             Uri uri = data.getData();
             Bitmap image = null;
             try {
@@ -184,19 +217,7 @@ public class AddEditContactActivity extends Activity {
             }
             addImage.setImageBitmap(image);
         }
-        if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                Log.d("addressApp", "result ok");
-                Bitmap photo = (Bitmap) data.getExtras().get("data");
-                addImage.setImageBitmap(photo);
-            } else if (resultCode == RESULT_CANCELED) {
-                // User cancelled the image capture
-            } else {
-                // Image capture failed, advise user
-            }
-        }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -204,12 +225,9 @@ public class AddEditContactActivity extends Activity {
         getMenuInflater().inflate(R.menu.menu_add_contact, menu);
         return true;
     }
-
+/*
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
@@ -219,4 +237,6 @@ public class AddEditContactActivity extends Activity {
 
         return super.onOptionsItemSelected(item);
     }
+
+*/
 }

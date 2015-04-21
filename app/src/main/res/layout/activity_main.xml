@@ -15,10 +15,10 @@
 
         <Button
             android:id="@+id/buttonAddContact"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:text="+"
-            android:onClick="addContact" />
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:onClick="addContact"
+            android:background="@drawable/add_contact" />
 
     </LinearLayout>
 

@@ -65,8 +65,8 @@ public class ViewContactActivity extends Activity {
             contactPhone = cursor.getString(2);
             contactEmail = cursor.getString(3);
             photo = cursor.getBlob(4);
-
         }
+        cursor.close();
 
         ByteArrayInputStream imageStream = new ByteArrayInputStream(photo);
         Bitmap image= BitmapFactory.decodeStream(imageStream);

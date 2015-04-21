@@ -26,6 +26,7 @@ public class MainActivity extends Activity {
     private byte[] image;
     private String firstName, lastName;
     ArrayList names;
+    CustomArrayAdapter<String> customArrayAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +37,7 @@ public class MainActivity extends Activity {
         handleIntent(getIntent());
     }
 
+    // gets contact information from the contentProvider and displays them in the listView
     public void showAllContacts() {
 
         String columns[] = new String[] {
@@ -45,9 +47,9 @@ public class MainActivity extends Activity {
                 ContentProviderContract.IMAGE
         };
 
-        ContentResolver cr = getContentResolver();
+        //ContentResolver cr = getContentResolver();
         final Uri contactsUri = ContentProviderContract.CONTACTS_URI;
-        Cursor cursor = cr.query(contactsUri, columns, null, null, null, null);
+        Cursor cursor = getContentResolver().query(contactsUri, columns, null, null, null, null);
         final ArrayList id = new ArrayList();
         names = new ArrayList();
         ArrayList images = new ArrayList();
@@ -57,12 +59,12 @@ public class MainActivity extends Activity {
             lastName = cursor.getString(2);
             image = cursor.getBlob(3);
             id.add(contactId);
-            names.add(firstName +" "+ lastName);
+            names.add(firstName + " "+lastName);
             images.add(image);
         }
         cursor.close();
 
-        CustomArrayAdapter<String> customArrayAdapter = new CustomArrayAdapter<String>(this, names, images);
+        customArrayAdapter = new CustomArrayAdapter<String>(this, names, images);
         listView = (ListView) findViewById(R.id.contactsListView);
         listView.setAdapter(customArrayAdapter);
 
@@ -97,21 +99,15 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onNewIntent(Intent intent) {
-        Log.d("addressApp","onNewIntent called");
         setIntent(intent);
         handleIntent(intent);
     }
 
     private void handleIntent(Intent intent) {
-        Log.d("addressApp","handleIntent: "+intent);
 
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
             Log.d("addressApp","query: "+query);
-            if (names.contains(query)) {
-
-            }
-            //use the query to search your data somehow
         }
     }
 
@@ -133,34 +129,26 @@ public class MainActivity extends Activity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                Log.d("addressApp", "onQueryTextSubmit");
+
                 //callSearch(query);
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                Log.d("addressApp", "onQueryTextChange");
-//              if (searchView.isExpanded() && TextUtils.isEmpty(newText)) {
-                //callSearch(newText);
-//              }
-                return true;
-            }
+                Log.d("addressApp", "onQueryTextChange: "+newText);
+                customArrayAdapter.getFilter().filter(newText.toString());
 
-            public void callSearch(String query) {
-                //Do searching
+                return true;
             }
 
         });
 
         return true;
     }
-
+/*
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
@@ -170,4 +158,5 @@ public class MainActivity extends Activity {
 
         return super.onOptionsItemSelected(item);
     }
+*/
 }
