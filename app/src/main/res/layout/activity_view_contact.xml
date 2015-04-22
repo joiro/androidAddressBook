@@ -48,7 +48,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="15dp"
             android:id="@+id/layoutPhone1"
-            android:visibility="visible"
+            android:visibility="gone"
             android:onClick="onClick">
 
             <LinearLayout
@@ -85,7 +85,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="15dp"
             android:id="@+id/layoutPhone2"
-            android:visibility="visible"
+            android:visibility="gone"
             android:onClick="onClick">
 
             <LinearLayout
@@ -120,7 +120,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:id="@+id/layoutMail1"
-            android:visibility="visible"
+            android:visibility="gone"
             android:onClick="onClick"
             android:layout_marginBottom="15dp"
             android:layout_marginTop="10dp">
@@ -158,7 +158,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:id="@+id/layoutMail2"
-            android:visibility="visible"
+            android:visibility="gone"
             android:onClick="onClick"
             android:layout_marginBottom="15dp">
 
