@@ -31,12 +31,12 @@ public class AddEditContactActivity extends Activity {
     private byte[] photo;
     private int contactId;
     private boolean newContact;
-    private String contactFirstName, contactLastName, contactPhone, contactPhone2, contactEmail, contactEmail2;
+    private String contactFirstName, contactLastName, contactPhone, contactPhone2, contactEmail, contactEmail2, contactAddress;
 
     private Button addField;
     private ImageView addImage;
-    private LinearLayout phone2Layout, mail2Layout;
-    private EditText addFirstName, addLastName, addPhone, addMail, addMail2, addPhone2;
+    private LinearLayout phone2Layout, mail2Layout, addressLayout;
+    private EditText addFirstName, addLastName, addPhone, addMail, addMail2, addPhone2, addAddress;
 
     private static final int IMAGE_SELECTION = 1;
     private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
@@ -44,7 +44,7 @@ public class AddEditContactActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_contact);
+        setContentView(R.layout.activity_add_edit_contact);
 
         // identify the views
         addImage = (ImageView) findViewById(R.id.addImage);
@@ -55,8 +55,10 @@ public class AddEditContactActivity extends Activity {
         addPhone2 = (EditText) findViewById(R.id.addPhone2);
         addMail = (EditText) findViewById(R.id.addMail);
         addMail2 = (EditText) findViewById(R.id.addMail2);
+        addAddress = (EditText) findViewById(R.id.addAddress);
         phone2Layout = (LinearLayout) findViewById(R.id.phone2Layout);
         mail2Layout = (LinearLayout) findViewById(R.id.mail2Layout);
+        addressLayout = (LinearLayout) findViewById(R.id.addressLayout);
         addField = (Button) findViewById(R.id.addField);
 
         // Receive the id information for the contact to edit from the ViewContact Activity
@@ -85,6 +87,7 @@ public class AddEditContactActivity extends Activity {
                 ContentProviderContract.PHONE_TWO,
                 ContentProviderContract.EMAIL,
                 ContentProviderContract.EMAIL_TWO,
+                ContentProviderContract.ADDRESS,
                 ContentProviderContract.IMAGE
         };
 
@@ -98,7 +101,8 @@ public class AddEditContactActivity extends Activity {
             contactPhone2 = cursor.getString(3);
             contactEmail = cursor.getString(4);
             contactEmail2 = cursor.getString(5);
-            photo = cursor.getBlob(6);
+            contactAddress = cursor.getString(6);
+            photo = cursor.getBlob(7);
         }
         cursor.close();
 
@@ -111,6 +115,7 @@ public class AddEditContactActivity extends Activity {
         addPhone2.setText(contactPhone2);
         addMail.setText(contactEmail);
         addMail2.setText(contactEmail2);
+        addAddress.setText(contactAddress);
         addImage.setImageBitmap(image);
         try {
             imageStream.close();
@@ -119,6 +124,7 @@ public class AddEditContactActivity extends Activity {
         }
         showView(contactPhone2, addPhone2, phone2Layout);
         showView(contactEmail2, addMail2, mail2Layout);
+        showView(contactAddress, addAddress, addressLayout);
     }
 
     // displays additional fields for phone / email if their corresponding data strings are not empty
@@ -139,17 +145,20 @@ public class AddEditContactActivity extends Activity {
                 int id = item.getItemId();
 
                 // adds a second phone field
-                if (id == R.id.addPhone2) {
+                if (id == R.id.addPhone2Field) {
                     Log.d("addressApp", "email field added");
-                    String field = "phone";
-                    addField(field);
+                    addField("phone");
                     return true;
                 }
                 // adds a second email field
-                if (id == R.id.addEmail2) {
+                if (id == R.id.addEmail2Field) {
                     Log.d("addressApp", "email field added");
-                    String field = "email";
-                    addField(field);
+                    addField("email");
+                    return true;
+                }
+                if (id == R.id.addAddressField) {
+                    Log.d("addressApp", "address field added");
+                    addField("address");
                     return true;
                 }
                 return true;
@@ -166,6 +175,9 @@ public class AddEditContactActivity extends Activity {
                 break;
             case "email":
                 mail2Layout.setVisibility(View.VISIBLE);
+                break;
+            case "address":
+                addressLayout.setVisibility(View.VISIBLE);
                 break;
         }
     }
@@ -191,6 +203,7 @@ public class AddEditContactActivity extends Activity {
         String phone2 = addPhone2.getText().toString();
         String mail = addMail.getText().toString();
         String mail2 = addMail2.getText().toString();
+        String address = addAddress.getText().toString();
 
         // checks if firstName field is empty and displays toast if it is
         if (!firstName.isEmpty()) {
@@ -201,6 +214,7 @@ public class AddEditContactActivity extends Activity {
             contentValues.put(ContentProviderContract.PHONE_TWO, phone2);
             contentValues.put(ContentProviderContract.EMAIL, mail);
             contentValues.put(ContentProviderContract.EMAIL_TWO, mail2);
+            contentValues.put(ContentProviderContract.ADDRESS, address);
             contentValues.put(ContentProviderContract.IMAGE, photo);
 
             // checks if contacts gets created or updated depending on the state of the boolean 'newContact'
@@ -218,12 +232,11 @@ public class AddEditContactActivity extends Activity {
                 int number = getContentResolver().update(ContentProviderContract.CONTACTS_URI, contentValues,ContentProviderContract.ID+"="+contactId, null);
                 Bundle bundle = new Bundle();
                 bundle.putInt("contactId", contactId);
-                Intent intent = new Intent(this, MainActivity.class);
+                Intent intent = new Intent(this, ViewContactActivity.class);
                 intent.putExtras(bundle);
                 intent.addFlags(intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
             }
-
         }
         // here the toast if the name is empty gets created
         else {

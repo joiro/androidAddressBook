@@ -40,7 +40,7 @@ public class MyContentProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        dbHelper = new DBAdapter.DBHelper(getContext(), DBNAME, null, 11);
+        dbHelper = new DBAdapter.DBHelper(getContext(), DBNAME, null, 12);
 
         return true;
     }

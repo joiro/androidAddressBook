@@ -26,11 +26,11 @@ public class ViewContactActivity extends Activity implements View.OnClickListene
 
     byte[] photo;
     private int contactId;
-    private String contactFirstName, contactLastName, contactPhone, contactPhone2, contactEmail, contactEmail2;
+    private String contactFirstName, contactLastName, contactPhone, contactPhone2, contactEmail, contactEmail2, contactAddress;
 
     private ImageView contactImage;
-    private TextView nameView, phoneView, phoneView2, mailView, mailView2;
-    private LinearLayout layoutPhone1, layoutPhone2, layoutMail1, layoutMail2;
+    private TextView nameView, phoneView, phoneView2, mailView, mailView2, addressView;
+    private LinearLayout layoutPhone1, layoutPhone2, layoutMail1, layoutMail2, layoutAddress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,10 +49,12 @@ public class ViewContactActivity extends Activity implements View.OnClickListene
         mailView.setOnClickListener(this);
         mailView2 = (TextView) findViewById(R.id.emailAddressView2);
         mailView2.setOnClickListener(this);
+        addressView = (TextView) findViewById(R.id.addressView);
         layoutPhone1 = (LinearLayout) findViewById(R.id.layoutPhone1);
         layoutPhone2 = (LinearLayout) findViewById(R.id.layoutPhone2);
         layoutMail1 = (LinearLayout) findViewById(R.id.layoutMail1);
         layoutMail2 = (LinearLayout) findViewById(R.id.layoutMail2);
+        layoutAddress = (LinearLayout) findViewById(R.id.layoutAddress);
 
         // Receive the name information for the contact to show from the MainActivity
         Bundle bundle = getIntent().getExtras();
@@ -70,6 +72,7 @@ public class ViewContactActivity extends Activity implements View.OnClickListene
                 ContentProviderContract.PHONE_TWO,
                 ContentProviderContract.EMAIL,
                 ContentProviderContract.EMAIL_TWO,
+                ContentProviderContract.ADDRESS,
                 ContentProviderContract.IMAGE
         };
 
@@ -84,7 +87,8 @@ public class ViewContactActivity extends Activity implements View.OnClickListene
             contactPhone2 = cursor.getString(3);
             contactEmail = cursor.getString(4);
             contactEmail2 = cursor.getString(5);
-            photo = cursor.getBlob(6);
+            contactAddress = cursor.getString(6);
+            photo = cursor.getBlob(7);
         }
         cursor.close();
 
@@ -96,6 +100,7 @@ public class ViewContactActivity extends Activity implements View.OnClickListene
         showView(contactPhone2, phoneView2, layoutPhone2);
         showView(contactEmail, mailView, layoutMail1);
         showView(contactEmail2, mailView2, layoutMail2);
+        showView(contactAddress, addressView, layoutAddress);
         contactImage.setImageBitmap(image);
         try {
             imageStream.close();
@@ -116,25 +121,31 @@ public class ViewContactActivity extends Activity implements View.OnClickListene
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.phoneNumberView:
+            case R.id.layoutPhone1:
                 Uri number = Uri.parse("tel:" + phoneView.getText());
                 Intent callIntent = new Intent(Intent.ACTION_CALL, number);
                 startActivity(callIntent);
                 break;
-            case R.id.phoneNumberView2:
+            case R.id.layoutPhone2:
                 Uri number2 = Uri.parse("tel:" + phoneView2.getText());
                 Intent callIntent2 = new Intent(Intent.ACTION_CALL, number2);
                 startActivity(callIntent2);
                 break;
-            case R.id.emailAddressView:
+            case R.id.layoutMail1:
                 Uri mail = Uri.parse("mailto:"+mailView.getText());
                 Intent mailIntent = new Intent(Intent.ACTION_SENDTO, mail);
                 startActivity(Intent.createChooser(mailIntent, "Send Email"));
                 break;
-            case R.id.emailAddressView2:
+            case R.id.layoutMail2:
                 Uri mail2 = Uri.parse("mailto:"+mailView2.getText());
                 Intent mailIntent2 = new Intent(Intent.ACTION_SENDTO, mail2);
                 startActivity(Intent.createChooser(mailIntent2, "Send Email"));
+                break;
+            case R.id.layoutAddress:
+                Uri mapsUri = Uri.parse("geo:0,0?q="+addressView.getText().toString());
+                Intent mapsIntent = new Intent(Intent.ACTION_VIEW, mapsUri);
+                mapsIntent.setPackage("com.google.android.apps.maps");
+                startActivity(mapsIntent);
                 break;
         }
     }

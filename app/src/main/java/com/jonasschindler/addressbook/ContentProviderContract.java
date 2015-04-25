@@ -22,5 +22,7 @@ public class ContentProviderContract {
 
     public static final String EMAIL_TWO = "emailTwo";
 
+    public static final String ADDRESS = "address";
+
     public static final String IMAGE = "image";
 }

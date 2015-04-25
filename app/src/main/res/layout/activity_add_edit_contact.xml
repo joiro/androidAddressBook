@@ -169,7 +169,8 @@
                 android:inputType="textEmailAddress"
                 android:ems="10"
                 android:hint="Email"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:singleLine="false" />
         </LinearLayout>
 
         <LinearLayout
@@ -184,7 +185,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="4"
-                android:gravity="center_vertical" >
+                android:gravity="center_vertical">
 
                 <ImageView
                     android:layout_width="30dp"
@@ -202,6 +203,45 @@
                 android:ems="10"
                 android:hint="Email"
                 android:layout_weight="1" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/addressLayout"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="4"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:id="@+id/imageView9"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/address_icon" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1">
+
+                <EditText
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPostalAddress"
+                    android:ems="10"
+                    android:id="@+id/addAddress"
+                    android:hint="Address" />
+
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 

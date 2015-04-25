@@ -1,11 +1,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
-        android:id="@+id/addPhone2"
+        android:id="@+id/addPhone2Field"
         android:title="Phone"/>
 
     <item
-        android:id="@+id/addEmail2"
+        android:id="@+id/addEmail2Field"
         android:title="Email"/>
+
+    <item
+        android:id="@+id/addAddressField"
+        android:title="Address"/>
 
 </menu>  
