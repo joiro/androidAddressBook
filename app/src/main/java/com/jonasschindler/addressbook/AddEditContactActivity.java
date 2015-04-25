@@ -19,7 +19,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.ByteArrayInputStream;
@@ -28,16 +27,18 @@ import java.io.IOException;
 
 public class AddEditContactActivity extends Activity {
 
-    private static final int IMAGE_SELECTION = 1;
-    private String contactFirstName, contactLastName, contactPhone, contactPhone2, contactEmail, contactEmail2;
-    private int contactId;
-    private byte[] photo;
-    private EditText addFirstName, addLastName, addPhone, addMail, addMail2, addPhone2;
-    private ImageView addImage;
-    private boolean newContact;
-    private LinearLayout phone2Layout, mail2Layout;
-    private Button addField;
 
+    private byte[] photo;
+    private int contactId;
+    private boolean newContact;
+    private String contactFirstName, contactLastName, contactPhone, contactPhone2, contactEmail, contactEmail2;
+
+    private Button addField;
+    private ImageView addImage;
+    private LinearLayout phone2Layout, mail2Layout;
+    private EditText addFirstName, addLastName, addPhone, addMail, addMail2, addPhone2;
+
+    private static final int IMAGE_SELECTION = 1;
     private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
 
     @Override
@@ -45,6 +46,7 @@ public class AddEditContactActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_contact);
 
+        // identify the views
         addImage = (ImageView) findViewById(R.id.addImage);
         addImage.setImageResource(R.drawable.contact_high);
         addFirstName = (EditText) findViewById(R.id.addFirstName);
@@ -75,7 +77,7 @@ public class AddEditContactActivity extends Activity {
     // fills contacts information to textFields, if 'edit contact' was chosen
     public void fillContactData() {
 
-        // columns that get queried from contentProvider
+        // the columns to retrieve from the contentProvider
         String columns[] = new String[] {
                 ContentProviderContract.FIRSTNAME,
                 ContentProviderContract.LASTNAME,
@@ -86,9 +88,9 @@ public class AddEditContactActivity extends Activity {
                 ContentProviderContract.IMAGE
         };
 
-        //ContentResolver cr = getContentResolver();
         final Uri contactsUri = ContentProviderContract.CONTACTS_URI;
-        Cursor cursor = getContentResolver().query(contactsUri, columns, ContentProviderContract.ID + "=" + contactId, null, null, null);
+        Cursor cursor = getContentResolver()
+                .query(contactsUri, columns, ContentProviderContract.ID + "=" + contactId, null, null, null);
         while(cursor.moveToNext()) {
             contactFirstName = cursor.getString(0);
             contactLastName = cursor.getString(1);
@@ -119,7 +121,7 @@ public class AddEditContactActivity extends Activity {
         showView(contactEmail2, addMail2, mail2Layout);
     }
 
-    // displays additional fields if their corresponding data strings are not empty
+    // displays additional fields for phone / email if their corresponding data strings are not empty
     public void showView(String field, EditText view, LinearLayout layout) {
         if(!field.isEmpty()) {
             layout.setVisibility(View.VISIBLE);
@@ -135,8 +137,8 @@ public class AddEditContactActivity extends Activity {
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             public boolean onMenuItemClick(MenuItem item) {
                 int id = item.getItemId();
-                // adds a second phone field
 
+                // adds a second phone field
                 if (id == R.id.addPhone2) {
                     Log.d("addressApp", "email field added");
                     String field = "phone";
@@ -156,6 +158,7 @@ public class AddEditContactActivity extends Activity {
         popup.show();
     }
 
+    // called when 'addField' button is clicked; displays additional textFields for phone/email
     public void addField(String field) {
         switch (field) {
             case "phone":
@@ -181,7 +184,7 @@ public class AddEditContactActivity extends Activity {
             e.printStackTrace();
         }
 
-        // get text from textFields
+        // stores input from textFields
         String firstName = addFirstName.getText().toString();
         String lastName = addLastName.getText().toString();
         String phone = addPhone.getText().toString();
@@ -222,11 +225,11 @@ public class AddEditContactActivity extends Activity {
             }
 
         }
+        // here the toast if the name is empty gets created
         else {
             Toast toast = Toast.makeText(this, "First Name cannot be empty!", Toast.LENGTH_SHORT);
             toast.show();
         }
-
     }
 
     // creates popupMenu when user clicks imageView to choose source of contactImage
@@ -271,16 +274,13 @@ public class AddEditContactActivity extends Activity {
         // return from camera
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                Log.d("addressApp", "result ok");
+                // if an image was taken, it get stored and displayed in the imageView
                 Bitmap photo = (Bitmap) data.getExtras().get("data");
-
                 addImage.setImageBitmap(photo);
             } else if (resultCode == RESULT_CANCELED) {
                 // user aborted image capture
-                Toast toast = Toast.makeText(this, "Capture cancelled!", Toast.LENGTH_SHORT);
-                toast.show();
             } else {
-                // Image capture failed
+                // Image capture failed, notify user with a toast
                 Toast toast = Toast.makeText(this, "Image capture failed!", Toast.LENGTH_SHORT);
                 toast.show();
             }
@@ -288,22 +288,25 @@ public class AddEditContactActivity extends Activity {
         // return from gallery
         if (requestCode == IMAGE_SELECTION) {
             if (resultCode == RESULT_OK) {
+                // receives the image as an uri..
                 Uri uri = data.getData();
                 Bitmap image = null;
                 try {
+                    // .. transforms it to a bitmap..
                     image = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                // .. and displays it in the imageView
                 addImage.setImageBitmap(image);
             }
             else if (resultCode == RESULT_CANCELED) {
                 // user aborted image selection
             } else {
-                // image selection failed
-
+                // image selection failed, notify the user with a toast
+                Toast toast = Toast.makeText(this, "Image selection failed!", Toast.LENGTH_SHORT);
+                toast.show();
             }
-
         }
     }
 
@@ -313,17 +316,4 @@ public class AddEditContactActivity extends Activity {
         getMenuInflater().inflate(R.menu.menu_add_contact, menu);
         return true;
     }
-/*
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.delete_contact) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-*/
 }

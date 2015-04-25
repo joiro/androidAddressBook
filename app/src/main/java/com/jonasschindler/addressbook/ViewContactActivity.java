@@ -11,7 +11,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.Layout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,18 +24,20 @@ import java.io.IOException;
 
 public class ViewContactActivity extends Activity implements View.OnClickListener{
 
+    byte[] photo;
     private int contactId;
     private String contactFirstName, contactLastName, contactPhone, contactPhone2, contactEmail, contactEmail2;
-    byte[] photo;
+
+    private ImageView contactImage;
     private TextView nameView, phoneView, phoneView2, mailView, mailView2;
     private LinearLayout layoutPhone1, layoutPhone2, layoutMail1, layoutMail2;
-    private ImageView contactImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_contact);
 
+        // identify the views and set clickListener
         contactImage = (ImageView) findViewById(R.id.contactImage);
         contactImage.setImageResource(R.drawable.contact_high);
         nameView  = (TextView) findViewById(R.id.firstNameView);
@@ -61,6 +62,7 @@ public class ViewContactActivity extends Activity implements View.OnClickListene
 
     public void displayDetails() {
 
+        // the columns to retrieve from the contentProvider
         String columns[] = new String[] {
                 ContentProviderContract.FIRSTNAME,
                 ContentProviderContract.LASTNAME,
@@ -71,9 +73,9 @@ public class ViewContactActivity extends Activity implements View.OnClickListene
                 ContentProviderContract.IMAGE
         };
 
-        ContentResolver cr = getContentResolver();
         final Uri contactsUri = ContentProviderContract.CONTACTS_URI;
-        Cursor cursor = cr.query(contactsUri, columns, ContentProviderContract.ID+"="+contactId, null, null, null);
+        Cursor cursor = getContentResolver()
+                .query(contactsUri, columns, ContentProviderContract.ID+"="+contactId, null, null, null);
 
         while(cursor.moveToNext()) {
             contactFirstName = cursor.getString(0);
@@ -102,6 +104,7 @@ public class ViewContactActivity extends Activity implements View.OnClickListene
         }
     }
 
+    // display phone / email fields when they're not empty
     public void showView(String field, TextView view, LinearLayout layout) {
         if(!field.isEmpty()) {
             layout.setVisibility(View.VISIBLE);
@@ -109,6 +112,7 @@ public class ViewContactActivity extends Activity implements View.OnClickListene
         }
     }
 
+    // open phone / emailApp when the phone / email fields are clicked
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -134,30 +138,16 @@ public class ViewContactActivity extends Activity implements View.OnClickListene
                 break;
         }
     }
-/*
-    public void callContact(View view) {
 
-        Uri number = Uri.parse("tel:" + phoneView.getText());
-        Intent callIntent = new Intent(Intent.ACTION_CALL, number);
-        startActivity(callIntent);
-    }
-
-    public void openEmail(View view) {
-        Uri mail = Uri.parse("mailto:"+mailView.getText());
-        Intent mailIntent = new Intent(Intent.ACTION_SENDTO, mail);
-        startActivity(Intent.createChooser(mailIntent, "Send Email"));
-    }
-*/
-
+    // Start EditContact Activity with Id information
     public void editDetails() {
-        // Start EditContact Activity with Id information
         Bundle bundle = new Bundle();
         bundle.putInt("contactId",contactId);
-        Intent intent = new Intent(this, AddEditContactActivity.class); //.putExtras(bundle);
-        intent.putExtras(bundle);
+        Intent intent = new Intent(this, AddEditContactActivity.class).putExtras(bundle);
         startActivity(intent);
     }
 
+    // deletes contact and returns to MainActivity
     public void deleteDetails() {
         // Call the delete Method in Content Provider
         int number = getContentResolver().delete(ContentProviderContract.CONTACTS_URI,ContentProviderContract.ID+"="+contactId, null);
@@ -168,26 +158,24 @@ public class ViewContactActivity extends Activity implements View.OnClickListene
         startActivity(intent);
     }
 
+    // alert when 'delete contact' is selected
     public Dialog alertDialog() {
-        // Instantiate an AlertDialog.Builder with its constructor
+        // Instantiate the AlertDialog.Builder
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Are you sure you want to delete this contact?");
+        // OK button clicked
         builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                // user clicked OK button
                 deleteDetails();
             }
         });
+        // cancel button clicked
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // user cancelled the dialog
-                Log.d("addressApp", "alert cancelled");
-            }
-        });
-        // get the AlertDialog from create()
+            public void onClick(DialogInterface dialog, int id) { }});
+
+        // create the alertDialog
         return builder.create();
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -200,10 +188,12 @@ public class ViewContactActivity extends Activity implements View.OnClickListene
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
+        // when the edit option is selected
         if (id == R.id.edit_contact) {
             this.editDetails();
             return true;
         }
+        // when the delete option is selected
         if (id == R.id.delete_contact) {
             this.alertDialog().show();
             return true;

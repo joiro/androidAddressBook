@@ -1,32 +1,26 @@
 package com.jonasschindler.addressbook;
 
 import android.app.Activity;
-import android.app.SearchManager;
-import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.SearchView;
 
 import java.util.ArrayList;
 
 
 public class MainActivity extends Activity {
 
-    private ListView listView;
     private int contactId;
     private byte[] image;
     private String firstName, lastName;
-    ArrayList names;
-    CustomArrayAdapter<String> customArrayAdapter;
+    private CustomArrayAdapter<String> customArrayAdapter;
+
+    private ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,12 +28,13 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         showAllContacts();
-        handleIntent(getIntent());
+        //handleIntent(getIntent());
     }
 
     // gets contact information from the contentProvider and displays them in the listView
     public void showAllContacts() {
 
+        // the columns to retrieve from the contentProvider
         String columns[] = new String[] {
                 ContentProviderContract.ID,
                 ContentProviderContract.FIRSTNAME,
@@ -47,12 +42,12 @@ public class MainActivity extends Activity {
                 ContentProviderContract.IMAGE
         };
 
-        //ContentResolver cr = getContentResolver();
         final Uri contactsUri = ContentProviderContract.CONTACTS_URI;
+        // receive cursor from the contentProvider with the contact information
         Cursor cursor = getContentResolver().query(contactsUri, columns, null, null, null, null);
         final ArrayList id = new ArrayList();
-        names = new ArrayList();
-        ArrayList images = new ArrayList();
+        final ArrayList names = new ArrayList();
+        final ArrayList images = new ArrayList();
         while(cursor.moveToNext()) {
             contactId = cursor.getInt(0);
             firstName = cursor.getString(1);
@@ -73,45 +68,27 @@ public class MainActivity extends Activity {
 
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                // retrieve the contactId of the selected contact and attach it to the intent
                 int contactId = (int) id.get(i);
                 Bundle bundle = new Bundle();
                 bundle.putInt("contactId",contactId);
+
+                // create intent to open the contact activity of the selected contact
                 Intent intent = new Intent(getApplicationContext(), com.jonasschindler.addressbook.ViewContactActivity.class);
                 intent.putExtras(bundle);
                 startActivity(intent);
             }
         });
-
-        listView.setOnItemLongClickListener( new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.d("addressApp", "Pos: "+i+"Id: "+ id.get(i));
-                return false;
-            }
-        });
     }
 
-    // Called when add contact button is clicked, opens the Add ContactActivity
+    // Called when add contact button is clicked, opens the AddContactActivity
     public void addContact(View view) {
         Intent intent = new Intent(this, AddEditContactActivity.class);
         startActivity(intent);
     }
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        setIntent(intent);
-        handleIntent(intent);
-    }
-
-    private void handleIntent(Intent intent) {
-
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            Log.d("addressApp","query: "+query);
-        }
-    }
-
-    // Ensuring to display the latest data when resuming the activity
+    // Ensures to display the latest data when resuming the activity
     public void onResume() {
         super.onResume();
         this.showAllContacts();
@@ -121,42 +98,6 @@ public class MainActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-
-                //callSearch(query);
-                return true;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                Log.d("addressApp", "onQueryTextChange: "+newText);
-                customArrayAdapter.getFilter().filter(newText.toString());
-
-                return true;
-            }
-
-        });
-
         return true;
     }
-/*
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-*/
 }
