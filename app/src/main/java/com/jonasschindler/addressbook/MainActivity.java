@@ -28,7 +28,6 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         showAllContacts();
-        //handleIntent(getIntent());
     }
 
     // gets contact information from the contentProvider and displays them in the listView
@@ -42,12 +41,15 @@ public class MainActivity extends Activity {
                 ContentProviderContract.IMAGE
         };
 
+        // receives URI from ContentProviderContract
         final Uri contactsUri = ContentProviderContract.CONTACTS_URI;
         // receive cursor from the contentProvider with the contact information
         Cursor cursor = getContentResolver().query(contactsUri, columns, null, null, null, null);
         final ArrayList id = new ArrayList();
         final ArrayList names = new ArrayList();
         final ArrayList images = new ArrayList();
+
+        // saves contact information from the cursor and save them to arrayLists
         while(cursor.moveToNext()) {
             contactId = cursor.getInt(0);
             firstName = cursor.getString(1);
@@ -59,6 +61,7 @@ public class MainActivity extends Activity {
         }
         cursor.close();
 
+        // Instantiates the CustomArrayAdapter and displays the listView with the contacts in it
         customArrayAdapter = new CustomArrayAdapter<String>(this, names, images);
         listView = (ListView) findViewById(R.id.contactsListView);
         listView.setAdapter(customArrayAdapter);

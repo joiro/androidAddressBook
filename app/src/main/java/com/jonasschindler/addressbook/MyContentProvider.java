@@ -11,14 +11,9 @@ import android.net.Uri;
 public class MyContentProvider extends ContentProvider {
     public MyContentProvider() {}
 
-    private String table;
+    private String table = "contacts";
     private static final String DBNAME = "contacts";
     private static DBAdapter.DBHelper dbHelper;
-    private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-    static {
-        uriMatcher.addURI(ContentProviderContract.AUTHORITY,"contacts",1);
-        uriMatcher.addURI(ContentProviderContract.AUTHORITY,"contacts/#",2);
-    }
 
     @Override
     public String getType(Uri uri) {
@@ -47,19 +42,6 @@ public class MyContentProvider extends ContentProvider {
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        int uriType = uriMatcher.match(uri);
-        switch (uriType) {
-            case 1:
-                table = "contacts";
-                break;
-            case 2:
-                table = "contacts";
-                // adding the ID to the original query
-                selection = selection + "_ID = " + uri.getLastPathSegment();
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown URI: " + uri);
-        }
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         Cursor cursor = db.query(table, projection, selection, null, null, null, null);
         return cursor;

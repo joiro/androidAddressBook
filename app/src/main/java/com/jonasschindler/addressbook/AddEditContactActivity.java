@@ -123,6 +123,7 @@ public class AddEditContactActivity extends Activity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        // manages visibility for the additional fields
         showView(contactPhone2, addPhone2, phone2Layout);
         showView(contactEmail2, addMail2, mail2Layout);
         showView(contactAddress, addAddress, addressLayout);
@@ -221,11 +222,8 @@ public class AddEditContactActivity extends Activity {
             // checks if contacts gets created or updated depending on the state of the boolean 'newContact'
             if (newContact) {
                 Uri uri = getContentResolver().insert(ContentProviderContract.CONTACTS_URI, contentValues);
-                // Start the ViewContactActivity showing the added contact
-                //Bundle bundle = new Bundle();
-                //bundle.putInt("contactId", contactId);
+                // Starts the MainActivity
                 Intent intent = new Intent(this, MainActivity.class);
-                //intent.putExtras(bundle);
                 intent.addFlags(intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
             } else {
