@@ -118,30 +118,32 @@ public class ViewContactActivity extends Activity implements View.OnClickListene
     }
 
     // open phone / emailApp when the phone / email fields are clicked
+    // it is sending intents to the mail / camera / GoogleMaps applications and
+    // attaches the phoneNumber / emailAddress / postAddress
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.layoutPhone1:
+            case R.id.phoneNumberView:
                 Uri number = Uri.parse("tel:" + phoneView.getText());
                 Intent callIntent = new Intent(Intent.ACTION_CALL, number);
                 startActivity(callIntent);
                 break;
-            case R.id.layoutPhone2:
+            case R.id.phoneNumberView2:
                 Uri number2 = Uri.parse("tel:" + phoneView2.getText());
                 Intent callIntent2 = new Intent(Intent.ACTION_CALL, number2);
                 startActivity(callIntent2);
                 break;
-            case R.id.layoutMail1:
+            case R.id.emailAddressView:
                 Uri mail = Uri.parse("mailto:"+mailView.getText());
                 Intent mailIntent = new Intent(Intent.ACTION_SENDTO, mail);
                 startActivity(Intent.createChooser(mailIntent, "Send Email"));
                 break;
-            case R.id.layoutMail2:
+            case R.id.emailAddressView2:
                 Uri mail2 = Uri.parse("mailto:"+mailView2.getText());
                 Intent mailIntent2 = new Intent(Intent.ACTION_SENDTO, mail2);
                 startActivity(Intent.createChooser(mailIntent2, "Send Email"));
                 break;
-            case R.id.layoutAddress:
+            case R.id.addressView:
                 Uri mapsUri = Uri.parse("geo:0,0?q="+addressView.getText().toString());
                 Intent mapsIntent = new Intent(Intent.ACTION_VIEW, mapsUri);
                 mapsIntent.setPackage("com.google.android.apps.maps");
@@ -150,7 +152,7 @@ public class ViewContactActivity extends Activity implements View.OnClickListene
         }
     }
 
-    // Start EditContact Activity with Id information
+    // Sends intent with Id information to EditContact Activity and starts it
     public void editDetails() {
         Bundle bundle = new Bundle();
         bundle.putInt("contactId",contactId);
@@ -188,6 +190,7 @@ public class ViewContactActivity extends Activity implements View.OnClickListene
         return builder.create();
     }
 
+    // creates the OptionsMenu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.

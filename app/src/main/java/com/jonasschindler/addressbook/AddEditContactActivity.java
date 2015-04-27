@@ -38,6 +38,7 @@ public class AddEditContactActivity extends Activity {
     private LinearLayout phone2Layout, mail2Layout, addressLayout;
     private EditText addFirstName, addLastName, addPhone, addMail, addMail2, addPhone2, addAddress;
 
+    // id codes for gallery and camera apps
     private static final int IMAGE_SELECTION = 1;
     private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
 
