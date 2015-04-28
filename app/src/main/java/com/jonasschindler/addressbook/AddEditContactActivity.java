@@ -40,7 +40,7 @@ public class AddEditContactActivity extends Activity {
 
     // id codes for gallery and camera apps
     private static final int IMAGE_SELECTION = 1;
-    private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
+    private static final int IMAGE_CAPTURE_REQUEST_CODE = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -271,7 +271,7 @@ public class AddEditContactActivity extends Activity {
     // sends intent to open cameraApp
     public void openCamera() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+        startActivityForResult(intent, IMAGE_CAPTURE_REQUEST_CODE);
     }
 
     // sends intent to open default galleryApp
@@ -284,7 +284,7 @@ public class AddEditContactActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // return from camera
-        if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
+        if (requestCode == IMAGE_CAPTURE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 // if an image was taken, it get stored and displayed in the imageView
                 Bitmap photo = (Bitmap) data.getExtras().get("data");
